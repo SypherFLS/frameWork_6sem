@@ -90,7 +90,6 @@ func main() {
 			return
 		}
 
-		// Извлекаем ID из пути
 		path := strings.TrimPrefix(r.URL.Path, "/api/items/")
 		if path == "" || path == r.URL.Path {
 			errorResponse := log.MakeError(400, "bad request", 1, "missing item id")
