@@ -1,18 +1,15 @@
 package models
 
 import (
-	"framew/internal/db"
 	"framew/internal/log"
 )
-
 
 type User struct {
 	Username string
 	Password string
-	Db db.Conteiner
 }
 
-func (u *User) Validate() *log.Error {
+func (u *User) Validate() *log.Err {
 	if u.Username == "" {
 		result := log.MakeError(422, "bad user validation", 1, "empty username")
 		return result

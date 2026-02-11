@@ -1,38 +1,40 @@
-package log 
+package log
 
-
-import (
-
-)
-
-type Error struct {
-	id int 
-	isDone bool
-	comment string 
-	identification Iden
+type Err struct {
+	Id             int    `json:"code"`
+	IsDone         bool   `json:"success"`
+	Comment        string `json:"message"`
+	Identification Iden   `json:"request_id"`
 }
 
 type Iden struct {
-	num int 
-	process string
+	Num     int    `json:"num"`
+	Process string `json:"process"`
 }
 
-
-func MakeError(id int, com string, num int, proc string) *Error{
-	ident := Iden {
-		num:num, 
-		process: proc,
+func MakeError(id int, com string, num int, proc string) *Err {
+	ident := Iden{
+		Num:     num,
+		Process: proc,
 	}
-	return &Error {
-		id:id,
-		isDone: false,
-		comment:com,
-		identification: ident,
+	return &Err{
+		Id:             id,
+		IsDone:         false,
+		Comment:        com,
+		Identification: ident,
 	}
 }
 
-func BackSucsess() *Error{
-	return &Error{
-		isDone: true,
+func BackSucsess() *Err {
+	return &Err{
+		Id:     200,
+		IsDone: true,
+	}
+}
+
+func BackSucsessCreate() *Err {
+	return &Err{
+		Id:     201,
+		IsDone: true,
 	}
 }
