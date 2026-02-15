@@ -2,9 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"framew/internal/db"
-	"framew/internal/log"
-	"framew/internal/models"
+	"framew/internal/lib"
+	_ "framew/internal/models"
 	"net/http"
 	"strings"
 )
@@ -26,8 +27,13 @@ import (
 // сообщение и идентификатор запроса.
 
 func main() {
+	if err := lib.InitLogger(); err != nil {
+		fmt.Printf("Ошибка инициализации логгера: %v\n", err)
+	}
+	defer lib.CloseLogger()
+
 	Storage := &db.Conteiner{
-		Items: make([]models.Item, 0),
+		Items: make([]db.Item, 0),
 	}
 
 	http.HandleFunc("/api/items", func(w http.ResponseWriter, r *http.Request) {
@@ -40,9 +46,9 @@ func main() {
 			json.NewEncoder(w).Encode(items)
 
 		case "POST":
-			var item models.Item
+			var item db.Item
 			if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
-				errorResponse := log.MakeError(400, "bad request", 1, "invalid json")
+				errorResponse := lib.MakeError(400, "bad request", 1, "invalid json")
 				w.WriteHeader(errorResponse.Id)
 				json.NewEncoder(w).Encode(errorResponse)
 				return
@@ -64,7 +70,7 @@ func main() {
 
 			items := Storage.GetAllItems()
 			if len(items) == 0 {
-				errorResponse := log.MakeError(500, "internal server error", 1, "failed to create item")
+				errorResponse := lib.MakeError(500, "internal server error", 1, "failed to create item")
 				w.WriteHeader(errorResponse.Id)
 				json.NewEncoder(w).Encode(errorResponse)
 				return
@@ -74,7 +80,7 @@ func main() {
 			json.NewEncoder(w).Encode(createdItem)
 
 		default:
-			errorResponse := log.MakeError(405, "method not allowed", 1, "unsupported method")
+			errorResponse := lib.MakeError(405, "method not allowed", 1, "unsupported method")
 			w.WriteHeader(errorResponse.Id)
 			json.NewEncoder(w).Encode(errorResponse)
 		}
@@ -84,7 +90,7 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 
 		if r.Method != "GET" {
-			errorResponse := log.MakeError(405, "method not allowed", 1, "unsupported method")
+			errorResponse := lib.MakeError(405, "method not allowed", 1, "unsupported method")
 			w.WriteHeader(errorResponse.Id)
 			json.NewEncoder(w).Encode(errorResponse)
 			return
@@ -92,7 +98,7 @@ func main() {
 
 		path := strings.TrimPrefix(r.URL.Path, "/api/items/")
 		if path == "" || path == r.URL.Path {
-			errorResponse := log.MakeError(400, "bad request", 1, "missing item id")
+			errorResponse := lib.MakeError(400, "bad request", 1, "missing item id")
 			w.WriteHeader(errorResponse.Id)
 			json.NewEncoder(w).Encode(errorResponse)
 			return

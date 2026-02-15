@@ -1,4 +1,4 @@
-package log
+package lib
 
 type Err struct {
 	Id             int    `json:"code"`
@@ -17,24 +17,27 @@ func MakeError(id int, com string, num int, proc string) *Err {
 		Num:     num,
 		Process: proc,
 	}
-	return &Err{
+	err := &Err{
 		Id:             id,
 		IsDone:         false,
 		Comment:        com,
 		Identification: ident,
 	}
+	LogError(err)
+	return err
 }
 
-func BackSucsess() *Err {
-	return &Err{
-		Id:     200,
-		IsDone: true,
+func BackSucsess(id int, com string, num int, proc string) *Err {
+	ident := Iden{
+		Num:     num,
+		Process: proc,
 	}
-}
-
-func BackSucsessCreate() *Err {
-	return &Err{
-		Id:     201,
-		IsDone: true,
+	err := &Err{
+		Id:             id,
+		IsDone:         true,
+		Comment:        com,
+		Identification: ident,
 	}
+	LogSuccess(err)
+	return err
 }
