@@ -17,7 +17,10 @@ func (i *Item) Validate() *lib.Err {
 	} else if i.Price <= 0  {
 		result := lib.MakeError(422, "bad user validation", 1, "invalid price")
 		return result
-	} 
+	} else if len(i.Name) > 100000 {
+		result := lib.MakeError(400, "cash memmory ", 1, "invalid price")
+		return result
+	}
 
 	result := lib.BackSucsess(200, "validation", 2, "item validated")
 	return result

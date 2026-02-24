@@ -44,3 +44,28 @@
 [2026-02-24 09:28:55] [SUCCESS] УСПЕХ | Code: 201 | Message: operation | RequestID: 4 | Process: item created | Success: true
 [2026-02-24 09:28:55] [INFO] ОПЕРАЦИЯ | TIMING | RequestID: req-1771914535-7 | Duration: 7.572291ms
 [2026-02-24 09:28:55] [INFO] ОПЕРАЦИЯ | REQUEST_END | Method: POST | Path: /api/items | Status: 201 | Duration: 25.545625ms | RequestID: req-1771914535-7
+[2026-02-24 10:15:46] [INFO] ОПЕРАЦИЯ | REQUEST_START | Method: POST | Path: /api/items | RequestID: req-1771917346-1
+[2026-02-24 10:15:46] [INFO] ОПЕРАЦИЯ | REQUEST_START | Method: POST | Path: /api/items | RequestID: req-1771917346-2
+[2026-02-24 10:15:46] [SUCCESS] УСПЕХ | Code: 200 | Message: validation | RequestID: 2 | Process: item validated | Success: true
+[2026-02-24 10:15:46] [SUCCESS] УСПЕХ | Code: 200 | Message: validation | RequestID: 2 | Process: item validated | Success: true
+[2026-02-24 10:15:46] [SUCCESS] УСПЕХ | Code: 201 | Message: operation | RequestID: 4 | Process: item created | Success: true
+[2026-02-24 10:15:46] [SUCCESS] УСПЕХ | Code: 201 | Message: operation | RequestID: 4 | Process: item created | Success: true
+[2026-02-24 10:15:46] [INFO] ОПЕРАЦИЯ | TIMING | RequestID: req-1771917346-2 | Duration: 12.175584ms
+[2026-02-24 10:15:46] [INFO] ОПЕРАЦИЯ | REQUEST_END | Method: POST | Path: /api/items | Status: 201 | Duration: 20.912625ms | RequestID: req-1771917346-2
+[2026-02-24 10:15:46] [INFO] ОПЕРАЦИЯ | TIMING | RequestID: req-1771917346-1 | Duration: 18.12625ms
+[2026-02-24 10:15:46] [INFO] ОПЕРАЦИЯ | REQUEST_END | Method: POST | Path: /api/items | Status: 201 | Duration: 34.165959ms | RequestID: req-1771917346-1
+[2026-02-24 10:16:18] [INFO] ОПЕРАЦИЯ | REQUEST_START | Method: GET | Path: /api/items | RequestID: req-1771917378-3
+[2026-02-24 10:16:18] [INFO] ОПЕРАЦИЯ | TIMING | RequestID: req-1771917378-3 | Duration: 110.125µs
+[2026-02-24 10:16:18] [INFO] ОПЕРАЦИЯ | REQUEST_END | Method: GET | Path: /api/items | Status: 200 | Duration: 7.784833ms | RequestID: req-1771917378-3
+[2026-02-24 10:16:24] [INFO] ОПЕРАЦИЯ | REQUEST_START | Method: POST | Path: /api/items | RequestID: req-1771917384-4
+[2026-02-24 10:16:24] [ERROR] ОШИБКА | Code: 400 | Message: bad request | RequestID: 1 | Process: invalid json | Success: false
+[2026-02-24 10:16:24] [INFO] ОПЕРАЦИЯ | TIMING | RequestID: req-1771917384-4 | Duration: 5.485083ms
+[2026-02-24 10:16:24] [INFO] ОПЕРАЦИЯ | REQUEST_END | Method: POST | Path: /api/items | Status: 400 | Duration: 13.281375ms | RequestID: req-1771917384-4
+[2026-02-24 10:16:34] [INFO] ОПЕРАЦИЯ | REQUEST_START | Method: POST | Path: /api/items | RequestID: req-1771917394-5
+[2026-02-24 10:16:34] [SUCCESS] УСПЕХ | Code: 200 | Message: validation | RequestID: 2 | Process: item validated | Success: true
+[2026-02-24 10:16:34] [SUCCESS] УСПЕХ | Code: 201 | Message: operation | RequestID: 4 | Process: item created | Success: true
+[2026-02-24 10:16:34] [INFO] ОПЕРАЦИЯ | TIMING | RequestID: req-1771917394-5 | Duration: 6.36325ms
+[2026-02-24 10:16:34] [INFO] ОПЕРАЦИЯ | REQUEST_END | Method: POST | Path: /api/items | Status: 201 | Duration: 12.242458ms | RequestID: req-1771917394-5
+[2026-02-24 10:24:25] [INFO] ОПЕРАЦИЯ | REQUEST_START | Method: GET | Path: /api/items | RequestID: req-1771917865-6
+[2026-02-24 10:24:25] [INFO] ОПЕРАЦИЯ | TIMING | RequestID: req-1771917865-6 | Duration: 219.25µs
+[2026-02-24 10:24:25] [INFO] ОПЕРАЦИЯ | REQUEST_END | Method: GET | Path: /api/items | Status: 200 | Duration: 34.048291ms | RequestID: req-1771917865-6
