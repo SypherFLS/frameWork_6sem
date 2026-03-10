@@ -6,89 +6,69 @@ import (
 	"framew/internal/db"
 	"framew/internal/lib"
 	_ "framew/internal/models"
+	"framew/internal/workerpool"
 	"net/http"
-	"strings"
 )
 
 var Storage *db.Conteiner
+var Pool *workerpool.WorkerPool
 
 func itemsHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	ctx := workerpool.NewRequestContext(w, r, Storage)
+
+	var tasks []*workerpool.Task
 
 	switch r.Method {
 	case "GET":
-		items := Storage.GetAllItems()
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(items)
+		tasks = []*workerpool.Task{
+			workerpool.NewTask(workerpool.ParseRequestTask, ctx),
+			workerpool.NewTask(workerpool.GetAllItemsTask, nil),
+			workerpool.NewTask(workerpool.WriteResponseTask, nil),
+		}
 
 	case "POST":
-		var item db.Item
-		if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
-			errorResponse := lib.MakeError(400, "bad request", 1, "invalid json")
-			w.WriteHeader(errorResponse.Id)
-			json.NewEncoder(w).Encode(errorResponse)
-			return
+		tasks = []*workerpool.Task{
+			workerpool.NewTask(workerpool.ParseRequestTask, ctx),
+			workerpool.NewTask(workerpool.ValidateItemTask, nil),
+			workerpool.NewTask(workerpool.AddItemTask, nil),
+			workerpool.NewTask(workerpool.WriteResponseTask, nil),
 		}
-
-		validateErr := item.Validate()
-		if validateErr != nil && !validateErr.IsDone {
-			w.WriteHeader(validateErr.Id)
-			json.NewEncoder(w).Encode(validateErr)
-			return
-		}
-
-		addErr := Storage.AddNyItem(item.Name, item.Price)
-		if addErr != nil && !addErr.IsDone {
-			w.WriteHeader(addErr.Id)
-			json.NewEncoder(w).Encode(addErr)
-			return
-		}
-
-		items := Storage.GetAllItems()
-		if len(items) == 0 {
-			errorResponse := lib.MakeError(500, "internal server error", 1, "failed to create item")
-			w.WriteHeader(errorResponse.Id)
-			json.NewEncoder(w).Encode(errorResponse)
-			return
-		}
-		createdItem := items[len(items)-1]
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(createdItem)
 
 	default:
 		errorResponse := lib.MakeError(405, "method not allowed", 1, "unsupported method")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(errorResponse.Id)
 		json.NewEncoder(w).Encode(errorResponse)
+		return
 	}
+
+	chain := workerpool.NewTaskChain(tasks)
+	Pool.AddTaskChain(chain)
+
+	<-chain.ResultChan
 }
 
 func itemByIdHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	if r.Method != "GET" {
 		errorResponse := lib.MakeError(405, "method not allowed", 1, "unsupported method")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(errorResponse.Id)
 		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
 
-	path := strings.TrimPrefix(r.URL.Path, "/api/items/")
-	if path == "" || path == r.URL.Path {
-		errorResponse := lib.MakeError(400, "bad request", 1, "missing item id")
-		w.WriteHeader(errorResponse.Id)
-		json.NewEncoder(w).Encode(errorResponse)
-		return
+	ctx := workerpool.NewRequestContext(w, r, Storage)
+
+	tasks := []*workerpool.Task{
+		workerpool.NewTask(workerpool.ParseRequestTask, ctx),
+		workerpool.NewTask(workerpool.GetItemByIdTask, nil),
+		workerpool.NewTask(workerpool.WriteResponseTask, nil),
 	}
 
-	item, err := Storage.GetItemById(path)
-	if err != nil && !err.IsDone {
-		w.WriteHeader(err.Id)
-		json.NewEncoder(w).Encode(err)
-		return
-	}
+	chain := workerpool.NewTaskChain(tasks)
+	Pool.AddTaskChain(chain)
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(item)
+	<-chain.ResultChan
 }
 
 func main() {
@@ -100,6 +80,11 @@ func main() {
 	Storage = &db.Conteiner{
 		Items: make([]db.Item, 0),
 	}
+
+	Pool = workerpool.NewRunningPool(5)
+	Pool.Start()
+
+	defer Pool.Stop()
 
 	http.HandleFunc("/api/items", lib.ChainMiddleware(itemsHandler,
 		lib.LoggingMiddleware,
